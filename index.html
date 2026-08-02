@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>BlockForge Pro — Visual Content Builder</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Playfair+Display:wght@400;700;900&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
+:root {
+  --p:        #6366f1;
+  --p-d:      #4f46e5;
+  --p-l:      #818cf8;
+  --p-xl:     #c7d2fe;
+  --sec:      #ec4899;
+  --ok:       #10b981;
+  --warn:     #f59e0b;
+  --err:      #ef4444;
+  --cyan:     #06b6d4;
+
+  --bg0:  #080810;
+  --bg1:  #0f0f18;
+  --bg2:  #141420;
+  --bg3:  #1b1b28;
+  --bg4:  #222232;
+  --bg5:  #2a2a3e;
+  --bg6:  #32324a;
+
+  --b1:   rgba(255,255,255,.055);
+  --b2:   rgba(255,255,255,.10);
+  --b3:   rgba(255,255,255,.18);
+
+  --t1:   #eeeef8;
+  --t2:   #9090b0;
+  --t3:   #55556a;
+  --t4:   #38384a;
+
+  /* Aliases for engine.js compatibility */
+  --primary:       #6366f1;
+  --primary-dark:  #4f46e5;
+  --primary-light: #a5b4fc;
+  --secondary:     #ec4899;
+  --success:       #10b981;
+  --warning:       #f59e0b;
+  --danger:        #ef4444;
+  --bg:    #080810;
+  --bg-2:  #0f0f18;
+  --bg-3:  #1b1b28;
+  --bg-4:  #222232;
+  --bg-5:  #2a2a3e;
+  --border:   rgba(255,255,255,.055);
+  --border-2: rgba(255,255,255,.10);
+  --border-3: rgba(255,255,255,.18);
+  --text:   #eeeef8;
+  --text-2: #9090b0;
+  --text-3: #55556a;
+  --r-xs:4px; --r-sm:6px; --r:10px; --r-lg:16px; --r-xl:22px;
+  --shadow-sm:0 2px 8px rgba(0,0,0,.5);
+  --shadow:0 8px 32px rgba(0,0,0,.6);
+  --shadow-lg:0 24px 80px rgba(0,0,0,.7);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --t:.18s; --t-lg:.35s;
+
+  --tb:  54px;
+  --stb: 40px;
+  --sb:  264px;
+  --pp:  292px;
+}
+
+/* ============================================================
+   RESET
+============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:13px;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg0);color:var(--t1);height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
+button:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:3px}
+input,select,textarea{font-family:inherit;color:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--p);outline-offset:1px}
+a{text-decoration:none;color:inherit}
+::selection{background:rgba(99,102,241,.3)}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--bg6)}
+
+/* ============================================================
+   TOOLBAR
+============================================================ */
+.toolbar{
+  height:var(--tb);background:var(--bg1);
+  border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;
+  padding:0 12px;gap:5px;
+  flex-shrink:0;z-index:300;
+  box-shadow:0 1px 0 var(--b1),0 2px 12px rgba(0,0,0,.3);
+}
+.brand{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-right:4px;user-select:none}
+.brand-logo{
+  width:28px;height:28px;border-radius:7px;
+  background:linear-gradient(135deg,var(--p),var(--sec));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(99,102,241,.45);
+}
+.brand-name{font-weight:800;font-size:14px;letter-spacing:-.5px;white-space:nowrap;
+  background:linear-gradient(135deg,var(--t1) 40%,var(--t2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-tag{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--p),var(--sec));
+  color:#fff;padding:2px 5px;border-radius:99px;flex-shrink:0}
+.sep{width:1px;height:20px;background:var(--b2);flex-shrink:0;margin:0 1px}
+.spacer{flex:1;min-width:0}
+.tb-btn{
+  height:28px;padding:0 9px;border-radius:var(--r-sm);
+  font-size:11.5px;font-weight:500;color:var(--t2);
+  display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;
+  transition:background var(--t) var(--ease),color var(--t) var(--ease);
+  position:relative;
+}
+.tb-btn:hover{background:var(--bg4);color:var(--t1)}
+.tb-btn.active{background:var(--p);color:#fff}
+.tb-btn.active:hover{background:var(--p-d)}
+.tb-btn.ok{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.tb-btn.ok:hover{background:rgba(16,185,129,.25)}
+.tb-btn.danger:hover{background:rgba(239,68,68,.14);color:var(--err)}
+.tb-btn .ti{font-size:12px;line-height:1}
+.tb-icon{width:28px;height:28px;padding:0;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--t2);
+  transition:background var(--t) var(--ease),color var(--t) var(--ease);flex-shrink:0}
+.tb-icon:hover{background:var(--bg4);color:var(--t1)}
+.tb-icon.danger:hover{background:rgba(239,68,68,.14);color:var(--err)}
+.tb-icon[disabled]{opacity:.35;pointer-events:none}
+
+/* Segmented */
+.seg{display:flex;background:var(--bg3);border-radius:var(--r-sm);padding:2px;gap:1px;border:1px solid var(--b1);flex-shrink:0}
+.seg-btn{height:24px;padding:0 10px;border-radius:4px;font-size:11px;font-weight:600;color:var(--t3);transition:all var(--t) var(--ease);white-space:nowrap}
+.seg-btn.active{background:var(--p);color:#fff;box-shadow:0 1px 6px rgba(99,102,241,.4)}
+.seg-btn:hover:not(.active){color:var(--t2);background:var(--bg4)}
+
+/* Mode pills */
+.mode-pills{display:flex;background:var(--bg3);border-radius:var(--r-sm);padding:2px;gap:1px;border:1px solid var(--b1);flex-shrink:0}
+.mode-pill{height:24px;padding:0 8px;border-radius:4px;font-size:10.5px;font-weight:600;color:var(--t3);
+  display:flex;align-items:center;gap:3px;transition:all var(--t) var(--ease);white-space:nowrap}
+.mode-pill.active{background:var(--bg5);color:var(--t1)}
+.mode-pill:hover:not(.active){color:var(--t2)}
+
+/* Responsive hide */
+@media(max-width:1100px){.hide-md{display:none!important}}
+@media(max-width:800px){.hide-sm{display:none!important}}
+@media(max-width:560px){.hide-xs{display:none!important}.brand-name,.brand-tag{display:none}}
+
+/* ============================================================
+   SUB-TOOLBAR
+============================================================ */
+.subtoolbar{
+  height:var(--stb);background:var(--bg1);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 12px;gap:8px;
+  flex-shrink:0;overflow-x:auto;overflow-y:hidden;
+}
+.subtoolbar::-webkit-scrollbar{height:0}
+.canvas-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);white-space:nowrap;flex-shrink:0}
+.st-spacer{flex:1;min-width:4px}
+.prev-bar{display:flex;background:var(--bg3);border-radius:var(--r-sm);padding:2px;gap:1px;border:1px solid var(--b1);flex-shrink:0}
+.prev-btn{height:24px;padding:0 8px;border-radius:3px;font-size:10.5px;font-weight:600;color:var(--t3);
+  display:flex;align-items:center;gap:3px;transition:all var(--t) var(--ease);white-space:nowrap}
+.prev-btn.active{background:var(--bg5);color:var(--t1)}
+.prev-btn:hover:not(.active){color:var(--t2)}
+.zoom-ctrl{display:flex;align-items:center;gap:4px;background:var(--bg3);border-radius:var(--r-sm);padding:2px 7px;border:1px solid var(--b1);flex-shrink:0}
+.zoom-btn{width:16px;height:16px;border-radius:3px;font-size:13px;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease);line-height:1}
+.zoom-btn:hover{background:var(--bg5);color:var(--t1)}
+.zoom-val{font-size:10.5px;font-weight:700;color:var(--t2);min-width:32px;text-align:center;font-family:'JetBrains Mono',monospace}
+.blk-count{font-size:10px;color:var(--t3);white-space:nowrap;flex-shrink:0;font-family:'JetBrains Mono',monospace;
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--rf,99px);padding:2px 8px}
+
+/* ============================================================
+   APP BODY
+============================================================ */
+.app-body{flex:1;display:flex;overflow:hidden;position:relative}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+.sidebar{
+  width:var(--sb);background:var(--bg1);border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+  transition:transform var(--t-lg) var(--ease);z-index:100;
+}
+@media(max-width:768px){
+  .sidebar{position:absolute;top:0;left:0;bottom:0;width:min(var(--sb),85vw);
+    transform:translateX(-100%);box-shadow:var(--shadow-lg);z-index:200}
+  .sidebar.open{transform:translateX(0)}
+}
+.sb-head{padding:11px 12px 9px;border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.sb-head-row{display:flex;align-items:center;justify-content:space-between}
+.sb-label{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.sb-close{display:none;width:20px;height:20px;border-radius:3px;background:var(--bg4);
+  align-items:center;justify-content:center;font-size:10px;color:var(--t2);transition:all var(--t) var(--ease)}
+.sb-close:hover{background:var(--err);color:#fff}
+@media(max-width:768px){.sb-close{display:flex}}
+.sb-search{position:relative}
+.sb-search input{width:100%;height:28px;padding:0 8px 0 28px;background:var(--bg3);border:1px solid var(--b1);
+  border-radius:var(--r-sm);color:var(--t1);font-size:11.5px;transition:border-color var(--t) var(--ease)}
+.sb-search input:focus{border-color:var(--p)}
+.sb-search input::placeholder{color:var(--t3)}
+.sb-search-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:11px;pointer-events:none}
+.sb-tabs{display:flex;padding:6px 10px 0;gap:2px;flex-shrink:0}
+.sb-tab{flex:1;height:24px;border-radius:var(--r-sm);font-size:10.5px;font-weight:600;color:var(--t3);transition:all var(--t) var(--ease)}
+.sb-tab.active{background:var(--bg4);color:var(--t1)}
+.sb-tab:hover:not(.active){color:var(--t2)}
+.sb-body{flex:1;overflow-y:auto;padding:8px 8px 24px}
+.sb-body::-webkit-scrollbar{width:3px}
+
+/* Block library */
+.blk-cat{margin-bottom:12px}
+.blk-cat-label{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t4);
+  padding:0 2px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.blk-cat-label::after{content:'';flex:1;height:1px;background:var(--b1)}
+.blk-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.blk-item{background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r-sm);padding:8px 5px;
+  cursor:grab;transition:all var(--t) var(--ease);display:flex;flex-direction:column;align-items:center;gap:4px;
+  text-align:center;user-select:none;-webkit-user-select:none;touch-action:none}
+.blk-item:hover{border-color:var(--p);background:rgba(99,102,241,.1);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.blk-item:active{cursor:grabbing;transform:scale(.95)}
+.blk-item.dragging{opacity:.3}
+.bi-icon{font-size:17px;line-height:1}
+.bi-label{font-size:9.5px;font-weight:600;color:var(--t2);line-height:1.2}
+/* touch.js dynamic classes */
+#canvasScroll.pinching{touch-action:none;overflow:hidden}
+#canvasFrame.lasso-mode{cursor:crosshair!important}
+#canvasFrame.lasso-mode .block-wrapper{cursor:default!important}
+
+/* ============================================================
+   CANVAS AREA
+============================================================ */
+.canvas-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.canvas-scroll{
+  flex:1;overflow:auto;padding:40px 32px 80px;
+  display:flex;justify-content:center;align-items:flex-start;
+  position:relative;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%,rgba(99,102,241,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 80%,rgba(236,72,153,.04) 0%,transparent 60%),
+    var(--bg0);
+}
+.canvas-scroll::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.032) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+@media(max-width:768px){.canvas-scroll{padding:16px 10px 60px}}
+
+.canvas-frame{
+  background:#fff;border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lg),0 0 0 1px rgba(255,255,255,.06);
+  min-height:480px;position:relative;
+  transition:width var(--t-lg) var(--ease);
+  overflow:hidden;z-index:1;max-width:100%;
+}
+.canvas-frame.mode-web   {width:1160px}
+.canvas-frame.mode-email {width:600px}
+.canvas-frame.mode-flyer {width:794px}
+.canvas-frame.mode-ad    {width:400px}
+@media(max-width:768px){.canvas-frame{width:100%!important;border-radius:var(--r)}}
+
+/* Frame size label */
+.frame-label{
+  position:absolute;top:-22px;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;color:var(--t3);font-family:'JetBrains Mono',monospace;
+  pointer-events:none;gap:6px;
+}
+.frame-label-line{flex:1;height:1px;background:var(--b2)}
+
+/* Drop zone */
+.drop-zone{min-height:48px;border:2px dashed transparent;border-radius:var(--r-sm);
+  transition:all var(--t) var(--ease);position:relative}
+.drop-zone.drag-over{border-color:var(--p);background:rgba(99,102,241,.04)}
+.drop-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--p);font-weight:700;opacity:0;transition:opacity var(--t) var(--ease);pointer-events:none;gap:5px}
+.drop-zone.drag-over .drop-hint{opacity:1}
+
+/* Empty state */
+.canvas-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:460px;gap:12px;padding:40px 24px;text-align:center}
+.ce-icon{font-size:52px;opacity:.15;animation:float 3.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+.canvas-empty h3{font-size:19px;font-weight:800;color:#bbb;letter-spacing:-.3px}
+.canvas-empty p{font-size:12.5px;color:#999;max-width:240px;line-height:1.65}
+.ce-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.ce-btn{height:34px;padding:0 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;transition:all var(--t) var(--ease)}
+.ce-btn.p{background:var(--p);color:#fff;border:none}
+.ce-btn.p:hover{background:var(--p-d);transform:translateY(-1px)}
+.ce-btn.s{background:transparent;color:#aaa;border:1px solid rgba(255,255,255,.12)}
+.ce-btn.s:hover{background:rgba(255,255,255,.06);color:#ccc}
+
+/* Block wrapper */
+.block-wrapper{position:relative;cursor:pointer;transition:outline var(--t) var(--ease);animation:fadeUp .2s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.block-wrapper:hover{outline:2px solid rgba(99,102,241,.3)}
+.block-wrapper.selected{outline:2px solid var(--p)}
+
+/* Block type label (shows on hover) */
+.bw-label{
+  position:absolute;top:-22px;left:0;
+  display:none;align-items:center;gap:5px;z-index:15;
+  background:var(--p);color:#fff;
+  font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:3px 3px 0 0;
+  pointer-events:none;white-space:nowrap;
+}
+.bw-id-label{opacity:.6;font-family:'JetBrains Mono',monospace}
+.block-wrapper:hover .bw-label,
+.block-wrapper.selected .bw-label{display:flex}
+
+/* Block controls */
+.block-controls{position:absolute;top:-32px;right:0;display:none;gap:2px;z-index:20;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.block-wrapper.selected .block-controls,
+.block-wrapper:hover .block-controls{display:flex}
+.block-ctrl-btn{height:24px;padding:0 7px;border-radius:var(--r-sm);font-size:10px;font-weight:700;
+  display:flex;align-items:center;gap:2px;transition:all var(--t) var(--ease);white-space:nowrap}
+.block-ctrl-btn.move-up,.block-ctrl-btn.move-dn{background:var(--bg4);color:var(--t2)}
+.block-ctrl-btn.move-up:hover,.block-ctrl-btn.move-dn:hover{background:var(--bg5);color:var(--t1)}
+.block-ctrl-btn.dup{background:#059669;color:#fff}
+.block-ctrl-btn.dup:hover{background:#047857}
+.block-ctrl-btn.del{background:var(--err);color:#fff}
+.block-ctrl-btn.del:hover{background:#c53030}
+
+/* ============================================================
+   PROPERTIES PANEL
+============================================================ */
+.props-panel{
+  width:var(--pp);background:var(--bg1);border-left:1px solid var(--b1);
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+  transition:transform var(--t-lg) var(--ease);z-index:100;
+}
+@media(max-width:768px){
+  .props-panel{position:absolute;top:0;right:0;bottom:0;width:min(var(--pp),88vw);
+    transform:translateX(100%);box-shadow:var(--shadow-lg);z-index:200}
+  .props-panel.open{transform:translateX(0)}
+}
+.props-head{padding:11px 13px;border-bottom:1px solid var(--b1);flex-shrink:0;
+  display:flex;align-items:flex-start;justify-content:space-between}
+.props-title{font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+.props-sub{font-size:10px;color:var(--t3);margin-top:2px;font-family:'JetBrains Mono',monospace}
+.panel-close{display:none;width:20px;height:20px;border-radius:3px;background:var(--bg4);
+  align-items:center;justify-content:center;font-size:10px;color:var(--t2);flex-shrink:0;margin-left:6px;transition:all var(--t) var(--ease)}
+.panel-close:hover{background:var(--err);color:#fff}
+@media(max-width:768px){.panel-close{display:flex}}
+.props-scroll{flex:1;overflow-y:auto;padding:10px 12px 24px}
+.props-scroll::-webkit-scrollbar{width:3px}
+
+/* Form controls */
+.prop-section-title{font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--t3);margin:12px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--b1)}
+.prop-section-title:first-child{margin-top:0}
+.prop-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.prop-label{font-size:10.5px;color:var(--t2);font-weight:500;min-width:72px;flex-shrink:0;line-height:1.3}
+.prop-input{flex:1;height:27px;padding:0 7px;background:var(--bg3);border:1px solid var(--b1);
+  border-radius:var(--r-sm);color:var(--t1);font-size:11px;transition:border-color var(--t) var(--ease);min-width:0}
+.prop-input:focus{border-color:var(--p)}
+.prop-textarea{width:100%;padding:6px 7px;min-height:64px;resize:vertical;background:var(--bg3);
+  border:1px solid var(--b1);border-radius:var(--r-sm);color:var(--t1);font-size:11px;
+  transition:border-color var(--t) var(--ease);font-family:inherit;line-height:1.5;margin-bottom:6px}
+.prop-textarea:focus{border-color:var(--p)}
+.prop-select{flex:1;height:27px;padding:0 6px;background:var(--bg3);border:1px solid var(--b1);
+  border-radius:var(--r-sm);color:var(--t1);font-size:11px;cursor:pointer}
+.prop-color-input{width:27px;height:27px;padding:2px;flex-shrink:0;background:var(--bg3);
+  border:1px solid var(--b1);border-radius:var(--r-sm);cursor:pointer}
+.toggle{width:32px;height:17px;border-radius:99px;background:var(--bg5);position:relative;cursor:pointer;
+  transition:background var(--t) var(--ease);flex-shrink:0;border:1px solid var(--b2)}
+.toggle.on{background:var(--p);border-color:var(--p)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;
+  background:#fff;transition:left var(--t) var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle.on::after{left:17px}
+.toggle-label{font-size:10.5px;color:var(--t2)}
+.btn-apply{width:100%;height:30px;border-radius:var(--r-sm);background:var(--p);color:#fff;
+  font-size:11.5px;font-weight:700;transition:all var(--t) var(--ease);margin-top:3px}
+.btn-apply:hover{background:var(--p-d);transform:translateY(-1px)}
+.btn-secondary{width:100%;height:30px;border-radius:var(--r-sm);background:var(--bg3);
+  border:1px solid var(--b1);color:var(--t2);font-size:11.5px;font-weight:600;
+  transition:all var(--t) var(--ease);margin-top:3px}
+.btn-secondary:hover{background:var(--bg4);color:var(--t1)}
+.no-selection{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:10px;padding:20px;text-align:center}
+.ns-icon{font-size:32px;opacity:.12}
+.ns-text{font-size:11.5px;color:var(--t3);line-height:1.6}
+
+/* ============================================================
+   THEME GRID
+============================================================ */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.theme-card{border-radius:var(--r-sm);padding:6px;cursor:pointer;border:2px solid var(--b1);transition:all var(--t) var(--ease)}
+.theme-card:hover{border-color:var(--b3);transform:translateY(-1px)}
+.theme-card.active{border-color:var(--p)}
+.theme-preview{height:26px;border-radius:3px;margin-bottom:4px}
+.theme-name{font-size:9.5px;font-weight:700;color:var(--t2)}
+
+/* ============================================================
+   LAYER PANEL
+============================================================ */
+.layer-item{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:var(--r-sm);
+  cursor:pointer;transition:all var(--t) var(--ease);font-size:11px;color:var(--t2)}
+.layer-item:hover{background:var(--bg3);color:var(--t1)}
+.layer-item.active{background:rgba(99,102,241,.12);color:var(--p-l)}
+.layer-icon{font-size:11px;flex-shrink:0}
+.layer-name{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layer-num{font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.layer-actions{display:flex;gap:1px;opacity:0;transition:opacity var(--t) var(--ease);flex-shrink:0}
+.layer-item:hover .layer-actions{opacity:1}
+.layer-act-btn{width:16px;height:16px;border-radius:2px;font-size:9px;color:var(--t3);
+  display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease)}
+.layer-act-btn:hover{background:var(--bg5);color:var(--t1)}
+
+/* ============================================================
+   MOBILE OVERLAY
+============================================================ */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;
+  backdrop-filter:blur(2px);animation:fadeIn .2s var(--ease)}
+.mob-overlay.show{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ============================================================
+   TOAST
+============================================================ */
+.toast-container{position:fixed;bottom:16px;right:16px;display:flex;flex-direction:column;gap:6px;
+  z-index:9999;pointer-events:none;max-width:calc(100vw - 32px)}
+.toast{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:9px 13px;
+  display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);min-width:200px;max-width:300px;
+  animation:toastIn .22s var(--ease);pointer-events:all;transition:opacity .3s,transform .3s}
+.toast.success{border-left:3px solid var(--ok)}
+.toast.error  {border-left:3px solid var(--err)}
+.toast.info   {border-left:3px solid var(--p)}
+.toast.warning{border-left:3px solid var(--warn)}
+.toast-icon{font-size:13px;flex-shrink:0}
+.toast-msg{font-size:11.5px;font-weight:500;line-height:1.4}
+@keyframes toastIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+
+/* ============================================================
+   MODAL
+============================================================ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;
+  justify-content:center;z-index:1000;backdrop-filter:blur(8px) saturate(1.2);
+  opacity:0;pointer-events:none;transition:opacity var(--t) var(--ease);padding:16px}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--b2);border-radius:22px;padding:22px;
+  width:100%;max-width:580px;max-height:90dvh;overflow-y:auto;box-shadow:var(--shadow-lg);
+  transform:scale(.93) translateY(10px);transition:transform var(--t-lg) cubic-bezier(.34,1.56,.64,1)}
+.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+.modal::-webkit-scrollbar{width:3px}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.modal-x{width:28px;height:28px;border-radius:var(--r-sm);background:var(--bg3);color:var(--t2);
+  font-size:13px;display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease)}
+.modal-x:hover{background:var(--err);color:#fff}
+
+/* Template grid */
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+@media(max-width:480px){.tpl-grid{grid-template-columns:repeat(2,1fr)}}
+.tpl-card{border-radius:var(--r);overflow:hidden;border:2px solid var(--b1);cursor:pointer;transition:all var(--t) var(--ease)}
+.tpl-card:hover{border-color:var(--p);transform:translateY(-2px);box-shadow:var(--shadow)}
+.tpl-thumb{height:80px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.tpl-info{padding:8px 10px;background:var(--bg3)}
+.tpl-name{font-size:11px;font-weight:700}
+.tpl-desc{font-size:9.5px;color:var(--t3);margin-top:2px}
+.tpl-blocks{font-size:9px;color:var(--t4);margin-top:3px;font-family:'JetBrains Mono',monospace}
+
+/* Export */
+.exp-btns{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.exp-btn{flex:1;min-width:70px;height:32px;border-radius:var(--r-sm);font-size:11.5px;font-weight:700;transition:all var(--t) var(--ease)}
+.exp-btn.p{background:var(--p);color:#fff}
+.exp-btn.p:hover{background:var(--p-d)}
+.exp-btn.s{background:var(--bg3);border:1px solid var(--b1);color:var(--t2)}
+.exp-btn.s:hover{background:var(--bg4);color:var(--t1)}
+.code-out{background:var(--bg0);border:1px solid var(--b1);border-radius:var(--r-sm);padding:12px;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#a5b4fc;line-height:1.7;
+  overflow:auto;max-height:300px;white-space:pre-wrap;word-break:break-all}
+
+/* Shortcuts */
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+@media(max-width:480px){.sc-grid{grid-template-columns:1fr}}
+.sc-item{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;
+  background:var(--bg3);border-radius:var(--r-sm);font-size:10.5px;color:var(--t2);gap:8px}
+.kbd{display:inline-flex;align-items:center;padding:1px 5px;background:var(--bg4);
+  border:1px solid var(--b2);border-radius:3px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--t3)}
+
+/* ============================================================
+   PREVIEW OVERLAY — Full-screen real preview
+============================================================ */
+.preview-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:var(--bg0);
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s var(--ease);
+}
+.preview-overlay.open{opacity:1;pointer-events:all}
+
+.preview-toolbar{
+  height:52px;background:var(--bg1);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+.preview-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+.preview-badge{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--ok);color:#fff;padding:2px 6px;border-radius:99px}
+.preview-devices{display:flex;background:var(--bg3);border-radius:var(--r-sm);padding:2px;gap:1px;border:1px solid var(--b1)}
+.pv-device-btn{height:26px;padding:0 10px;border-radius:4px;font-size:11px;font-weight:600;color:var(--t3);
+  display:flex;align-items:center;gap:4px;transition:all var(--t) var(--ease);white-space:nowrap}
+.pv-device-btn.active{background:var(--bg5);color:var(--t1)}
+.pv-device-btn:hover:not(.active){color:var(--t2)}
+.preview-spacer{flex:1}
+.preview-url{
+  flex:1;max-width:360px;height:28px;padding:0 12px;
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--rf,99px);
+  color:var(--t2);font-size:11px;font-family:'JetBrains Mono',monospace;
+  display:flex;align-items:center;gap:6px;
+}
+.preview-url-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
+.preview-close{
+  height:32px;padding:0 16px;border-radius:var(--r-sm);
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);
+  color:#fca5a5;font-size:12px;font-weight:700;
+  transition:all var(--t) var(--ease);
+}
+.preview-close:hover{background:var(--err);color:#fff}
+
+.preview-body{
+  flex:1;overflow:auto;display:flex;flex-direction:column;
+  background:var(--bg0);padding:0;
+  position:relative;
+}
+/* Simulated browser chrome */
+.preview-chrome{
+  background:var(--bg2);border-bottom:1px solid var(--b1);
+  padding:8px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.chrome-dots{display:flex;gap:5px}
+.chrome-dot{width:10px;height:10px;border-radius:50%}
+.chrome-dot.r{background:#ef4444}
+.chrome-dot.y{background:#f59e0b}
+.chrome-dot.g{background:#10b981}
+.chrome-bar{flex:1;height:26px;background:var(--bg3);border-radius:99px;
+  display:flex;align-items:center;padding:0 12px;gap:6px;max-width:480px;margin:0 auto}
+.chrome-lock{font-size:10px;color:var(--ok)}
+.chrome-url{font-size:10.5px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+
+.preview-frame-wrap{
+  flex:1;overflow:auto;display:flex;justify-content:center;
+  padding:0;background:var(--bg0);
+}
+#previewFrame{
+  width:100%;border:none;flex-shrink:0;
+  transition:width .3s var(--ease);
+  background:#fff;
+  box-shadow:var(--shadow-lg);
+}
+
+/* Device frames */
+.preview-frame-wrap.tablet  #previewFrame{width:768px;margin:20px auto;border-radius:12px}
+.preview-frame-wrap.mobile  #previewFrame{width:375px;margin:20px auto;border-radius:20px;
+  box-shadow:0 0 0 8px var(--bg3),0 0 0 9px var(--b2),var(--shadow-lg)}
+
+/* ============================================================
+   MOBILE BOTTOM NAV
+============================================================ */
+.mobile-nav{display:none;height:52px;background:var(--bg1);border-top:1px solid var(--b1);
+  flex-shrink:0;align-items:center;justify-content:space-around;padding:0 8px;z-index:100}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;
+  border-radius:var(--r-sm);font-size:9px;font-weight:600;color:var(--t3);transition:all var(--t) var(--ease)}
+.mobile-nav-btn .mn-icon{font-size:18px}
+.mobile-nav-btn.active{color:var(--p)}
+@media(max-width:480px){.mobile-nav{display:flex}}
+
+/* ============================================================
+   AUTOSAVE INDICATOR
+============================================================ */
+.autosave-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--t4);
+  flex-shrink:0;transition:background .3s;
+}
+.autosave-dot.saved{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.autosave-dot.saving{background:var(--warn);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+<!-- ============================================================
+     PRIMARY TOOLBAR
+============================================================ -->
+<div aria-label="Main toolbar" class="toolbar" role="toolbar">
+<!-- Mobile sidebar toggle -->
+<button aria-label="Toggle sidebar" class="tb-icon hide-md" id="sbToggleBtn" onclick="toggleSidebar()" title="Block Library (B)">☰</button>
+<!-- Brand -->
+<div class="brand">
+<div aria-hidden="true" class="brand-logo">⚡</div>
+<span class="brand-name">BlockForge</span>
+<span class="brand-tag">Pro</span>
+</div>
+<div class="sep"></div>
+<!-- File -->
+<div style="display:flex;align-items:center;gap:2px">
+<button class="tb-btn" onclick="openTemplates()" title="Templates (T)">
+<span class="ti">🗂️</span><span class="hide-sm">Templates</span>
+</button>
+<button class="tb-btn" onclick="openExport()" title="Export code">
+<span class="ti">📤</span><span class="hide-sm">Export</span>
+</button>
+</div>
+<div class="sep hide-sm"></div>
+<div class="hide-sm" style="display:flex;align-items:center;gap:2px">
+<button class="tb-btn" id="saveBtn" onclick="saveProject()" title="Save (Ctrl+S)">
+<span class="ti">💾</span><span class="hide-md">Save</span>
+</button>
+<button class="tb-btn" onclick="loadProject()" title="Load saved project">
+<span class="ti">📂</span><span class="hide-md">Load</span>
+</button>
+</div>
+<div class="sep"></div>
+<!-- History -->
+<div style="display:flex;align-items:center;gap:2px">
+<button class="tb-icon" id="undoBtn" onclick="undo()" style="opacity:.35" title="Undo (Ctrl+Z)">↩️</button>
+<button class="tb-icon" id="redoBtn" onclick="redo()" style="opacity:.35" title="Redo (Ctrl+Y)">↪️</button>
+<button class="tb-icon danger" onclick="clearCanvas()" title="Clear canvas">🗑️</button>
+</div>
+<div class="spacer"></div>
+<!-- Autosave indicator -->
+<div class="hide-sm" style="display:flex;align-items:center;gap:5px" title="Auto-saves every 30s">
+<div class="autosave-dot" id="autosaveDot"></div>
+<span id="autosaveLabel" style="font-size:9.5px;color:var(--t3)">Unsaved</span>
+</div>
+<div class="sep hide-sm"></div>
+<!-- Editor mode -->
+<div aria-label="Editor mode" class="seg" role="group">
+<button class="seg-btn active" onclick="switchEditorMode('design',this)" title="Design mode">Design</button>
+<button class="seg-btn" onclick="switchEditorMode('code',this)" title="View code">Code</button>
+<button class="seg-btn" onclick="openPreviewPipeline()" title="Preview (Ctrl+P)">▶ Preview</button>
+</div>
+<div class="sep"></div>
+<!-- Studio launchers -->
+<button class="tb-btn hide-sm" onclick="GameStudio.open()" style="background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(99,102,241,.12));border:1px solid rgba(16,185,129,.3);color:#6ee7b7;font-weight:700" title="Game Studio — Canvas 2D game development">
+<span class="ti">🎮</span><span class="hide-md">Game</span>
+</button>
+<button class="tb-btn hide-sm" onclick="SVGStudio.open()" style="background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(236,72,153,.12));border:1px solid rgba(245,158,11,.3);color:#fcd34d;font-weight:700" title="SVG Studio — Vector graphics editor &amp; animator">
+<span class="ti">✦</span><span class="hide-md">SVG</span>
+</button>
+<button class="tb-btn hide-sm" onclick="NetworkStudio.open()" style="background:linear-gradient(135deg,rgba(6,182,212,.18),rgba(99,102,241,.12));border:1px solid rgba(6,182,212,.3);color:#67e8f9;font-weight:700" title="Multiplayer Studio — WebSocket &amp; WebRTC real-time networking">
+<span class="ti">🌐</span><span class="hide-md">Multiplayer</span>
+</button>
+<div class="sep"></div>
+<button class="tb-icon" onclick="openShortcuts()" title="Keyboard shortcuts">⌨️</button>
+<button class="tb-icon hide-md" id="panelToggleBtn" onclick="togglePanel()" title="Toggle properties panel">⚙</button>
+</div>
+<!-- ============================================================
+     SUB-TOOLBAR
+============================================================ -->
+<div aria-label="Canvas controls" class="subtoolbar" role="toolbar">
+<span class="canvas-label" id="canvasLabel">Web Page</span>
+<div aria-label="Canvas size" class="prev-bar" role="group">
+<button class="prev-btn active" onclick="setMode('web',this)" title="Web (1160px)">🖥️<span class="hide-xs"> Web</span></button>
+<button class="prev-btn" onclick="setMode('email',this)" title="Email (600px)">📧<span class="hide-xs"> Email</span></button>
+<button class="prev-btn" onclick="setMode('flyer',this)" title="Flyer (794px)">📄<span class="hide-xs"> Flyer</span></button>
+<button class="prev-btn" onclick="setMode('ad',this)" title="Ad (400px)">📢<span class="hide-xs"> Ad</span></button>
+</div>
+<div class="st-spacer"></div>
+<div aria-label="Zoom" class="zoom-ctrl" role="group">
+<button class="zoom-btn" onclick="zoom(-10)" title="Zoom out (Ctrl+-)">−</button>
+<span aria-live="polite" class="zoom-val" id="zoomVal">100%</span>
+<button class="zoom-btn" onclick="zoom(10)" title="Zoom in (Ctrl++)">+</button>
+</div>
+<button class="tb-btn" onclick="zoom(0)" style="height:24px;padding:0 7px;font-size:10.5px" title="Reset zoom (Ctrl+0)">Fit</button>
+<div class="sep"></div>
+<button class="tb-btn" onclick="typeof MSEngine!=='undefined'&amp;&amp;MSEngine.selectAll()" style="height:24px;padding:0 8px;font-size:10.5px;gap:3px" title="Select all (Ctrl+A)">
+<span>⬚</span><span class="hide-xs"> All</span>
+</button>
+<div class="sep"></div>
+<span aria-live="polite" class="blk-count" id="blockCount">0 blocks</span>
+</div>
+<!-- ============================================================
+     APP BODY
+============================================================ -->
+<div class="app-body" id="appBody">
+<!-- Mobile overlay -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeAllPanels()"></div>
+<!-- ── SIDEBAR ── -->
+<aside aria-label="Block library" class="sidebar" id="sidebar">
+<div class="sb-head">
+<div class="sb-head-row">
+<span class="sb-label">Block Library</span>
+<button aria-label="Close" class="sb-close" onclick="closeSidebar()">✕</button>
+</div>
+<div class="sb-search">
+<span aria-hidden="true" class="sb-search-ico">🔍</span>
+<input aria-label="Search blocks" id="blockSearch" oninput="filterBlocks(this.value)" placeholder="Search blocks…" type="search"/>
+</div>
+</div>
+<div class="sb-tabs" role="tablist">
+<button aria-selected="true" class="sb-tab active" onclick="switchSidebarTab('blocks',this)" role="tab">Blocks</button>
+<button aria-selected="false" class="sb-tab" onclick="switchSidebarTab('layers',this)" role="tab">Layers</button>
+<button aria-selected="false" class="sb-tab" onclick="switchSidebarTab('assets',this)" role="tab">Assets</button>
+</div>
+<div class="sb-body" id="sidebarContent" role="tabpanel"></div>
+</aside>
+<!-- ── CANVAS ── -->
+<main class="canvas-area" id="canvasArea">
+<div class="canvas-scroll" id="canvasScroll" ondragleave="onDragLeave(event)" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+<div class="canvas-frame mode-web" id="canvasFrame">
+<div class="frame-label" id="frameLabel">
+<div class="frame-label-line"></div>
+<span id="frameLabelText">1160px — Web Page</span>
+<div class="frame-label-line"></div>
+</div>
+<div id="canvasBlocks">
+<div class="canvas-empty" id="emptyState">
+<div aria-hidden="true" class="ce-icon">🧱</div>
+<h3>Start Building</h3>
+<p>Drag blocks from the library, or load a template to begin instantly.</p>
+<div class="ce-btns">
+<button class="ce-btn p" onclick="openTemplates()">🗂️ Templates</button>
+<button class="ce-btn s" onclick="addBlock('navbar')">+ Navbar</button>
+<button class="ce-btn s" onclick="addBlock('hero')">+ Hero</button>
+</div>
+</div>
+</div>
+<div class="drop-zone" id="mainDropZone" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+<div aria-hidden="true" class="drop-hint">⬇ Drop block here</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ── PROPERTIES PANEL ── -->
+<aside aria-label="Block properties" class="props-panel" id="propsPanel">
+<div class="props-head">
+<div>
+<div class="props-title" id="propsTitle">Properties</div>
+<div class="props-sub" id="propsSubtitle">Select a block to edit</div>
+</div>
+<button aria-label="Close" class="panel-close" onclick="closePanel()">✕</button>
+</div>
+<div class="props-scroll" id="propsScroll">
+<div class="no-selection">
+<div aria-hidden="true" class="ns-icon">🎨</div>
+<p class="ns-text">Click any block on the canvas to edit its content, styles, and layout.</p>
+</div>
+</div>
+</aside>
+</div>
+<!-- ============================================================
+     MOBILE BOTTOM NAV
+============================================================ -->
+<nav aria-label="Mobile navigation" class="mobile-nav">
+<button class="mobile-nav-btn active" id="mnBlocks" onclick="mobileNav('blocks',this)">
+<span class="mn-icon">🧱</span>Blocks
+  </button>
+<button class="mobile-nav-btn" id="mnCanvas" onclick="mobileNav('canvas',this)">
+<span class="mn-icon">🖼️</span>Canvas
+  </button>
+<button class="mobile-nav-btn" id="mnProps" onclick="mobileNav('props',this)">
+<span class="mn-icon">🎨</span>Props
+  </button>
+<button class="mobile-nav-btn" id="mnPreview" onclick="openPreviewPipeline()">
+<span class="mn-icon">▶</span>Preview
+  </button>
+</nav>
+<!-- ============================================================
+     TOAST
+============================================================ -->
+<div aria-atomic="true" aria-live="polite" class="toast-container" id="toastContainer"></div>
+<!-- ============================================================
+     PREVIEW OVERLAY — Real full-screen preview
+============================================================ -->
+<div aria-label="Preview" aria-modal="true" class="preview-overlay" id="previewOverlay" role="dialog">
+<div class="preview-toolbar">
+<div class="preview-brand">
+<div aria-hidden="true" class="brand-logo" style="width:24px;height:24px;font-size:12px">⚡</div>
+      BlockForge
+      <span class="preview-badge">PREVIEW</span>
+</div>
+<div class="sep"></div>
+<!-- Device switcher -->
+<div aria-label="Device preview" class="preview-devices" role="group">
+<button class="pv-device-btn active" onclick="setPreviewDevice('desktop',this)" title="Desktop">🖥️ Desktop</button>
+<button class="pv-device-btn" onclick="setPreviewDevice('tablet',this)" title="Tablet">📱 Tablet</button>
+<button class="pv-device-btn" onclick="setPreviewDevice('mobile',this)" title="Mobile">📱 Mobile</button>
+</div>
+<div class="preview-spacer"></div>
+<!-- Fake URL bar -->
+<div aria-hidden="true" class="preview-url">
+<div class="preview-url-dot"></div>
+<span class="chrome-url">blockforge.preview / <span id="previewModeLabel">web</span></span>
+</div>
+<div class="preview-spacer"></div>
+<!-- Pipeline strategy indicator -->
+<div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--b1);border-radius:99px;padding:3px 10px 3px 6px">
+<div id="pipelineStatus" style="width:7px;height:7px;border-radius:50%;background:#6366f1;transition:background .3s;flex-shrink:0" title="Active preview strategy"></div>
+<span id="pipelineStrategyLabel" style="font-size:9.5px;color:var(--t3);font-family:'JetBrains Mono',monospace">srcdoc</span>
+<span style="font-size:9px;color:var(--t4)">·</span>
+<span id="pipelineLatency" style="font-size:9.5px;color:var(--t4);font-family:'JetBrains Mono',monospace">—</span>
+</div>
+<div class="sep"></div>
+<button class="tb-btn" onclick="printCurrentCanvas()" style="height:30px;color:#fcd34d" title="Print / Export PDF (flyer mode)">
+<span>🖨️</span> Print PDF
+</button>
+<button class="tb-btn" onclick="openCollabPreview()" style="height:30px;color:#67e8f9" title="Open collaborative live preview">
+<span>🌐</span> Live
+</button>
+<button class="tb-btn" onclick="exportAs('html');downloadExport()" style="height:30px" title="Download HTML">
+<span>⬇</span> Download
+</button>
+<button class="preview-close" onclick="closePreviewPipeline()" title="Close preview (Esc)">✕ Close</button>
+</div>
+<!-- Simulated browser chrome -->
+<div class="preview-chrome">
+<div class="chrome-dots">
+<div class="chrome-dot r"></div>
+<div class="chrome-dot y"></div>
+<div class="chrome-dot g"></div>
+</div>
+<div class="chrome-bar">
+<span class="chrome-lock">🔒</span>
+<span class="chrome-url">blockforge.preview</span>
+</div>
+</div>
+<div class="preview-frame-wrap" id="previewFrameWrap">
+<iframe id="previewFrame" sandbox="allow-scripts" style="width:100%;border:none;min-height:400px;height:100%;background:#fff;display:block" title="Page preview"></iframe>
+</div>
+</div>
+<!-- ============================================================
+     MODAL — Templates
+============================================================ -->
+<div aria-label="Template Gallery" aria-modal="true" class="modal-overlay" id="templatesModal" role="dialog">
+<div class="modal">
+<div class="modal-hd">
+<div class="modal-title">🗂️ Template Gallery</div>
+<button aria-label="Close" class="modal-x" onclick="closeModal('templatesModal')">✕</button>
+</div>
+<p style="font-size:11.5px;color:var(--t3);margin-bottom:14px">
+      Choose a template to instantly populate your canvas with a professional layout.
+    </p>
+<div class="tpl-grid" id="templateGrid"></div>
+</div>
+</div>
+<!-- ============================================================
+     MODAL — Export
+============================================================ -->
+<div aria-label="Export" aria-modal="true" class="modal-overlay" id="exportModal" role="dialog">
+<div class="modal">
+<div class="modal-hd">
+<div class="modal-title">📤 Export</div>
+<button aria-label="Close" class="modal-x" onclick="closeModal('exportModal')">✕</button>
+</div>
+<div class="exp-btns">
+<button class="exp-btn p" onclick="exportAs('html')">📄 HTML</button>
+<button class="exp-btn s" onclick="exportAs('json')">{ } JSON</button>
+<button class="exp-btn s" onclick="copyExport()">📋 Copy</button>
+<button class="exp-btn s" onclick="downloadExport()">⬇ Download</button>
+</div>
+<div class="code-out" id="exportCode">// Click HTML or JSON to generate export code</div>
+</div>
+</div>
+<!-- ============================================================
+     MODAL — Shortcuts
+============================================================ -->
+<div aria-label="Keyboard Shortcuts" aria-modal="true" class="modal-overlay" id="shortcutsModal" role="dialog">
+<div class="modal" style="max-width:480px">
+<div class="modal-hd">
+<div class="modal-title">⌨️ Keyboard Shortcuts</div>
+<button aria-label="Close" class="modal-x" onclick="closeModal('shortcutsModal')">✕</button>
+</div>
+<div class="sc-grid">
+<div class="sc-item"><span>Undo</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd></span></div>
+<div class="sc-item"><span>Redo</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Y</kbd></span></div>
+<div class="sc-item"><span>Save</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd></span></div>
+<div class="sc-item"><span>Duplicate</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">D</kbd></span></div>
+<div class="sc-item"><span>Delete Block</span><span><kbd class="kbd">Del</kbd></span></div>
+<div class="sc-item"><span>Deselect / Close</span><span><kbd class="kbd">Esc</kbd></span></div>
+<div class="sc-item"><span>Move Up</span><span><kbd class="kbd">↑</kbd></span></div>
+<div class="sc-item"><span>Move Down</span><span><kbd class="kbd">↓</kbd></span></div>
+<div class="sc-item"><span>Next Block</span><span><kbd class="kbd">Tab</kbd></span></div>
+<div class="sc-item"><span>Prev Block</span><span><kbd class="kbd">Shift</kbd>+<kbd class="kbd">Tab</kbd></span></div>
+<div class="sc-item"><span>Zoom In</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">+</kbd></span></div>
+<div class="sc-item"><span>Zoom Out</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">-</kbd></span></div>
+<div class="sc-item"><span>Reset Zoom</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">0</kbd></span></div>
+<div class="sc-item"><span>Preview</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">P</kbd></span></div>
+<div class="sc-item"><span>Select All</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">A</kbd></span></div>
+<div class="sc-item"><span>Templates</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">T</kbd></span></div>
+</div>
+<div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--b1)">
+<p style="font-size:9.5px;font-weight:700;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px">Touch Gestures</p>
+<div class="sc-grid">
+<div class="sc-item"><span>Select Block</span><span style="font-size:14px">✌️ Two-tap</span></div>
+<div class="sc-item"><span>Lasso Select</span><span style="font-size:14px">☝️ Drag bg</span></div>
+<div class="sc-item"><span>Pinch Zoom</span><span style="font-size:14px">🤏 Pinch</span></div>
+<div class="sc-item"><span>Delete Block</span><span style="font-size:14px">👈 Swipe left</span></div>
+<div class="sc-item"><span>Long Press</span><span style="font-size:14px">👆 Hold 0.5s</span></div>
+<div class="sc-item"><span>Reset Zoom</span><span style="font-size:14px">👆👆 Double-tap</span></div>
+</div>
+</div>
+<p style="font-size:10.5px;color:var(--t3);margin-top:10px;text-align:center">
+      Shortcuts active when no input is focused
+    </p>
+</div>
+</div>
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="blocks.js"></script>
+<script src="engine.js"></script>
+<script src="touch.js"></script>
+<script src="multiselect.js"></script>
+<script src="game-engine.js"></script>
+<script src="svg-engine.js"></script>
+<script src="net-engine.js"></script>
+<script src="preview-pipeline.js"></script>
+<script>
+/* ============================================================
+   PANEL MANAGEMENT
+============================================================ */
+let sidebarOpen = false;
+let panelOpen   = false;
+
+function isMobile() { return window.innerWidth <= 768; }
+
+function toggleSidebar() { sidebarOpen ? closeSidebar() : openSidebar(); }
+function openSidebar() {
+  sidebarOpen = true;
+  document.getElementById('sidebar').classList.add('open');
+  if (isMobile()) {
+    document.getElementById('mobOverlay').classList.add('show');
+    if (panelOpen) closePanel();
+  }
+  setMobileNavActive('mnBlocks');
+}
+function closeSidebar() {
+  sidebarOpen = false;
+  document.getElementById('sidebar').classList.remove('open');
+  if (!panelOpen) document.getElementById('mobOverlay').classList.remove('show');
+}
+function togglePanel() { panelOpen ? closePanel() : openPanel(); }
+function openPanel() {
+  panelOpen = true;
+  document.getElementById('propsPanel').classList.add('open');
+  if (isMobile()) {
+    document.getElementById('mobOverlay').classList.add('show');
+    if (sidebarOpen) closeSidebar();
+  }
+  setMobileNavActive('mnProps');
+}
+function closePanel() {
+  panelOpen = false;
+  document.getElementById('propsPanel').classList.remove('open');
+  if (!sidebarOpen) document.getElementById('mobOverlay').classList.remove('show');
+}
+function closeAllPanels() { closeSidebar(); closePanel(); }
+function mobileNav(tab, btn) {
+  setMobileNavActive(btn.id || 'mnCanvas');
+  if (tab === 'blocks') { closePanel(); openSidebar(); }
+  else if (tab === 'props') { closeSidebar(); openPanel(); }
+  else { closeAllPanels(); setMobileNavActive('mnCanvas'); }
+}
+function setMobileNavActive(id) {
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+
+/* ============================================================
+   FRAME LABEL
+============================================================ */
+const FRAME_LABELS = {
+  web:'1160px — Web Page', email:'600px — Email',
+  flyer:'794px — Flyer / Print', ad:'400px — Ad / Banner'
+};
+const _origSetMode = setMode;
+function setMode(mode, btn) {
+  _origSetMode(mode, btn);
+  const fl = document.getElementById('frameLabelText');
+  if (fl) fl.textContent = FRAME_LABELS[mode] || mode;
+}
+
+/* ============================================================
+   PREVIEW DEVICE SWITCHER
+============================================================ */
+function setPreviewDevice(device, btn) {
+  document.querySelectorAll('.pv-device-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const wrap  = document.getElementById('previewFrameWrap');
+  const frame = document.getElementById('previewFrame');
+  if (!wrap || !frame) return;
+  wrap.className = 'preview-frame-wrap ' + (device !== 'desktop' ? device : '');
+  if (device === 'desktop') {
+    frame.style.width = '100%';
+    frame.style.margin = '0';
+    frame.style.borderRadius = '0';
+  }
+}
+
+/* ============================================================
+   BLOCK COUNT + AUTO-OPEN PROPS ON MOBILE
+============================================================ */
+const _origRenderCanvas = renderCanvas;
+function renderCanvas() {
+  _origRenderCanvas();
+  const el = document.getElementById('blockCount');
+  if (el) el.textContent = state.blocks.length + ' block' + (state.blocks.length !== 1 ? 's' : '');
+  if (state.selected && isMobile() && !panelOpen) openPanel();
+}
+
+/* ============================================================
+   AUTOSAVE INDICATOR
+============================================================ */
+function updateAutosaveUI(status) {
+  const dot = document.getElementById('autosaveDot');
+  const lbl = document.getElementById('autosaveLabel');
+  if (!dot || !lbl) return;
+  if (status === 'saved') {
+    dot.className = 'autosave-dot saved';
+    lbl.textContent = 'Saved';
+    setTimeout(() => { dot.className = 'autosave-dot'; lbl.textContent = 'Auto-save on'; }, 3000);
+  } else if (status === 'saving') {
+    dot.className = 'autosave-dot saving';
+    lbl.textContent = 'Saving…';
+  }
+}
+
+// Patch saveProject to update indicator
+const _origSave = saveProject;
+function saveProject() {
+  updateAutosaveUI('saving');
+  setTimeout(() => { _origSave(); updateAutosaveUI('saved'); }, 100);
+}
+
+// Patch autosave
+const _origStartAutoSave = startAutoSave;
+function startAutoSave() {
+  setInterval(() => {
+    if (state.blocks.length > 0) {
+      updateAutosaveUI('saving');
+      setTimeout(() => {
+        localStorage.setItem('blockforge_autosave', JSON.stringify({ blocks:state.blocks, ts:Date.now() }));
+        updateAutosaveUI('saved');
+      }, 200);
+    }
+  }, 30000);
+}
+
+/* ============================================================
+   ZOOM — disable on mobile
+============================================================ */
+const _origZoom = zoom;
+function zoom(delta) {
+  if (isMobile()) return;
+  _origZoom(delta);
+}
+
+/* ============================================================
+   SHORTCUTS
+============================================================ */
+function openShortcuts() { openModal('shortcutsModal'); }
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  if (['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (ctrl && e.key === 't') { e.preventDefault(); openTemplates(); }
+  if (e.key === 'b' && !ctrl) { e.preventDefault(); toggleSidebar(); }
+  if (e.key === 'Escape') { closeAllPanels(); }
+});
+
+/* ============================================================
+   RESIZE HANDLER
+============================================================ */
+window.addEventListener('resize', () => {
+  if (!isMobile()) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('propsPanel').classList.remove('open');
+    document.getElementById('mobOverlay').classList.remove('show');
+    sidebarOpen = false; panelOpen = false;
+  }
+});
+
+/* ============================================================
+   MODAL CLOSE ON BACKDROP
+============================================================ */
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+/* ============================================================
+   BOOT
+============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  init();
+
+  // Initialise the preview pipeline (attaches to #previewFrame)
+  if (typeof initPipeline === 'function') initPipeline();
+
+  // Desktop: panels always visible
+  if (!isMobile()) { sidebarOpen = true; panelOpen = true; }
+
+  // Mobile: start closed
+  if (isMobile()) {
+    document.getElementById('propsPanel').classList.remove('open');
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  // Touch UI
+  const isTouch = window.matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+  if (isTouch) {
+    document.getElementById('canvasScroll')?.addEventListener('touchstart', () => {
+      if (typeof BFTouch !== 'undefined') BFTouch.showHint?.();
+    }, { once:true, passive:true });
+  }
+
+  // Update pipeline strategy label when mode changes
+  const origSetMode = window.setMode;
+  window.setMode = function(mode, btn) {
+    origSetMode(mode, btn);
+    const stratMap = { web:'srcdoc', email:'srcdoc', flyer:'blob-url', ad:'srcdoc' };
+    const lbl = document.getElementById('pipelineStrategyLabel');
+    if (lbl) lbl.textContent = stratMap[mode] || 'srcdoc';
+  };
+
+  setTimeout(() => toast('Welcome to BlockForge Pro! Load a template or drag blocks to start.', 'info'), 800);
+});
+</script>
+</body>
+</html>
