@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>BlockForge Pro — Visual Content Builder</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Playfair+Display:wght@400;700;900&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
@@ -153,6 +153,8 @@ a{text-decoration:none;color:inherit}
 @media(max-width:1100px){.hide-md{display:none!important}}
 @media(max-width:800px){.hide-sm{display:none!important}}
 @media(max-width:560px){.hide-xs{display:none!important}.brand-name,.brand-tag{display:none}}
+.mobile-only{display:none!important}
+@media(max-width:768px){.mobile-only{display:flex!important}}
 
 /* ============================================================
    SUB-TOOLBAR
@@ -253,6 +255,7 @@ a{text-decoration:none;color:inherit}
   background-size:22px 22px;
 }
 @media(max-width:768px){.canvas-scroll{padding:16px 10px 60px}}
+@media(max-width:480px){.canvas-scroll{padding:10px 8px 44px}}
 
 .canvas-frame{
   background:#fff;border-radius:var(--r-lg);
@@ -266,6 +269,8 @@ a{text-decoration:none;color:inherit}
 .canvas-frame.mode-flyer {width:794px}
 .canvas-frame.mode-ad    {width:400px}
 @media(max-width:768px){.canvas-frame{width:100%!important;border-radius:var(--r)}}
+@media(max-width:768px){.canvas-frame{min-height:320px}}
+@media(max-width:480px){.canvas-frame{min-height:260px}}
 
 /* Frame size label */
 .frame-label{
@@ -341,6 +346,10 @@ a{text-decoration:none;color:inherit}
   .props-panel{position:absolute;top:0;right:0;bottom:0;width:min(var(--pp),88vw);
     transform:translateX(100%);box-shadow:var(--shadow-lg);z-index:200}
   .props-panel.open{transform:translateX(0)}
+}
+@media(max-width:400px){
+  .sidebar{width:min(var(--sb),80vw)}
+  .props-panel{width:min(var(--pp),84vw)}
 }
 .props-head{padding:11px 13px;border-bottom:1px solid var(--b1);flex-shrink:0;
   display:flex;align-items:flex-start;justify-content:space-between}
@@ -573,7 +582,24 @@ a{text-decoration:none;color:inherit}
   border-radius:var(--r-sm);font-size:9px;font-weight:600;color:var(--t3);transition:all var(--t) var(--ease)}
 .mobile-nav-btn .mn-icon{font-size:18px}
 .mobile-nav-btn.active{color:var(--p)}
-@media(max-width:480px){.mobile-nav{display:flex}}
+@media(max-width:768px){.mobile-nav{display:flex}}
+@media(max-width:768px){
+  body{padding-bottom:52px}
+  .mobile-nav{position:fixed;left:0;right:0;bottom:0}
+  .toast-container{bottom:68px;right:8px;left:8px;max-width:none}
+  .toast{min-width:0;max-width:none;width:100%}
+}
+@media(max-width:400px){
+  .mobile-nav-btn{padding:6px 8px;font-size:8.5px}
+  .mobile-nav-btn .mn-icon{font-size:16px}
+}
+
+@media(pointer:coarse){
+  .zoom-btn{width:28px;height:28px;font-size:14px}
+  .tb-icon{width:34px;height:34px}
+  .sb-close,.panel-close,.modal-x{width:32px;height:32px}
+  .layer-act-btn{width:24px;height:24px;font-size:10px}
+}
 
 /* ============================================================
    AUTOSAVE INDICATOR
@@ -593,7 +619,7 @@ a{text-decoration:none;color:inherit}
 ============================================================ -->
 <div aria-label="Main toolbar" class="toolbar" role="toolbar">
 <!-- Mobile sidebar toggle -->
-<button aria-label="Toggle sidebar" class="tb-icon hide-md" id="sbToggleBtn" onclick="toggleSidebar()" title="Block Library (B)">☰</button>
+<button aria-label="Toggle sidebar" class="tb-icon mobile-only" id="sbToggleBtn" onclick="toggleSidebar()" title="Block Library (B)">☰</button>
 <!-- Brand -->
 <div class="brand">
 <div aria-hidden="true" class="brand-logo">⚡</div>
@@ -738,7 +764,7 @@ a{text-decoration:none;color:inherit}
 <div class="props-title" id="propsTitle">Properties</div>
 <div class="props-sub" id="propsSubtitle">Select a block to edit</div>
 </div>
-<button aria-label="Close" class="panel-close" onclick="closePanel()">✕</button>
+<button aria-label="Close" class="panel-close mobile-only" onclick="closePanel()">✕</button>
 </div>
 <div class="props-scroll" id="propsScroll">
 <div class="no-selection">
@@ -1044,15 +1070,6 @@ function startAutoSave() {
       }, 200);
     }
   }, 30000);
-}
-
-/* ============================================================
-   ZOOM — disable on mobile
-============================================================ */
-const _origZoom = zoom;
-function zoom(delta) {
-  if (isMobile()) return;
-  _origZoom(delta);
 }
 
 /* ============================================================
